@@ -1,0 +1,46 @@
+# IDEs and Editors
+.idea/
+.vscode/
+*.iml
+
+# Node.js (frontend)
+node_modules/
+.next/
+dist/
+.env
+.env.* # in case you use .env.local, .env.development, etc.
+
+# Java (backend)
+target/
+build/
+out/
+*.log
+*.class
+*.jar
+*.war
+
+# Config files
+*.properties
+*.yml
+*.yaml
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+*.bak
+
+# Dependency lock files (optional to ignore depending on team)
+package-lock.json
+yarn.lock
+
+# Coverage / test results
+coverage/
+test-results/
