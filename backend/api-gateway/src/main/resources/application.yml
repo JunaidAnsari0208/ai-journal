@@ -1,0 +1,33 @@
+
+server:
+  port: 8080 # The standard port for a gateway
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      # --- Routing Rules ---
+      routes:
+        # Route for the user-service
+        - id: USER-SERVICE
+          uri: "lb://USER-SERVICE" # "lb" tells Gateway to use Eureka
+          predicates:
+            - Path=/api/users/**, /api/auth/**
+
+        # Route for the ai-journal service
+        - id: AI-JOURNAL
+          uri: "lb://AI-JOURNAL"
+          predicates:
+            - Path=/api/journals/**
+
+# --- Eureka Client Configuration ---
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+      # defaultZone: http://localhost:8761/eureka/
+

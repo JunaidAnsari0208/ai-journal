@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # 1. The Eureka Server (No secrets needed)
+  eureka-server:
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+
+  # 2. The User Service
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    environment:
+      # Database variables from .env
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      # JWT Secret from .env
+      - APPLICATION_SECURITY_JWT_SECRET_KEY=${APPLICATION_SECURITY_JWT_SECRET_KEY}
+    depends_on:
+      - eureka-server
+
+  # 3. The AI-Journal Service
+  ai-journal:
+    build: ./ai-journal
+    container_name: ai-journal
+    ports:
+      - "8082:8082"
+    environment:
+      # Database variables from .env
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      # Email secrets from .env
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+      # AI secret from .env
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      # JWT Secret from .env
+      - APPLICATION_SECURITY_JWT_SECRET_KEY=${APPLICATION_SECURITY_JWT_SECRET_KEY}
+    depends_on:
+      - eureka-server
+      - user-service
+
+  # 4. The API Gateway
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      # JWT Secret from .env
+      - APPLICATION_SECURITY_JWT_SECRET_KEY=${APPLICATION_SECURITY_JWT_SECRET_KEY}
+    depends_on:
+      - eureka-server
+      - user-service
+      - ai-journal
+
