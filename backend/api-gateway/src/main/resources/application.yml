@@ -7,21 +7,19 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      server:
-        webflux:
-          discovery:
-            locator:
-              enabled: true
-          routes:
-            - id: USER-SERVICE
-              uri: lb://USER-SERVICE
-              predicates:
-                - Path=/api/users/**
-                - Path=/api/auth/**
-            - id: AI-JOURNAL
-              uri: lb://AI-JOURNAL
-              predicates:
-                - Path=/api/journals/**
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+            - Path=/api/auth/**
+        - id: AI-JOURNAL
+          uri: lb://AI-JOURNAL
+          predicates:
+            - Path=/api/journals/**
 
 eureka:
   client:
