@@ -41,4 +41,4 @@ EXPOSE 8081
 
 # The command that will be executed when the container starts.
 # This runs the Spring Boot application.
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx512m", "-jar", "app.jar"]
