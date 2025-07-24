@@ -16,7 +16,8 @@ spring:
         - id: USER-SERVICE
           uri: "lb://USER-SERVICE" # "lb" tells Gateway to use Eureka
           predicates:
-            - Path=/api/users/**, /api/auth/**
+            - Path=/api/users/**
+            - Path=/api/auth/**
 
         # Route for the ai-journal service
         - id: AI-JOURNAL
@@ -25,9 +26,9 @@ spring:
             - Path=/api/journals/**
 
 # --- Eureka Client Configuration ---
-#eureka:
-#  client:
-#    serviceUrl:
-      # defaultZone: http://eureka-server:8761/eureka/
-      # defaultZone: http://localhost:8761/eureka/
-
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI}/eureka/
