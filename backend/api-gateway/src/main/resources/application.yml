@@ -33,7 +33,3 @@ logging:
     org.springframework.web.cors: DEBUG
     org.springframework.cloud.gateway: DEBUG
 
-# For Feign Client
-user:
-  service:
-    url: ${USER_SERVICE_ROUTE}
