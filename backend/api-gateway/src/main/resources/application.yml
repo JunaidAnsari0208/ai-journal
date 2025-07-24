@@ -12,12 +12,12 @@ spring:
           enabled: true
       routes:
         - id: USER-SERVICE
-          uri: ${USER_SERVICE_ROUTE}
+          uri: ${USER_SERVICE_ROUTE:lb://USER-SERVICE}
           predicates:
             - Path=/api/users/**, /api/auth/**
 
         - id: AI-JOURNAL
-          uri: ${AI-JOURNAL_ROUTE}
+          uri: ${AI-JOURNAL_ROUTE:lb://AI-JOURNAL}
           predicates:
             - Path=/api/journals/**
 
@@ -27,3 +27,8 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI}/eureka/
+
+logging:
+  level:
+    org.springframework.web.cors: DEBUG
+    org.springframework.cloud.gateway: DEBUG

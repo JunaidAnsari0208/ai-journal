@@ -23,7 +23,7 @@ public class CorsConfig {
         final CorsConfiguration corsConfig = new CorsConfiguration();
 
         // Allow requests from your Next.js development server
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://ai-journal-liard.vercel.app"));
+        corsConfig.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "https://*.vercel.app", "https://ai-journal-liard.vercel.app"));
 
         // Allow all standard HTTP methods
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -33,6 +33,8 @@ public class CorsConfig {
 
         // Allow credentials (like cookies and authorization headers)
         corsConfig.setAllowCredentials(true);
+        corsConfig.setMaxAge(3600L);
+        corsConfig.addExposedHeader("Authorization");
 
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
