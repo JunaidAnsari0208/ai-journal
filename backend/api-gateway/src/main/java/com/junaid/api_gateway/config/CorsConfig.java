@@ -23,7 +23,7 @@ public class CorsConfig {
         final CorsConfiguration corsConfig = new CorsConfiguration();
 
         // Allow requests from your Next.js development server
-        corsConfig.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://ai-journal-liard.vercel.app"));
 
         // Allow all standard HTTP methods
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
