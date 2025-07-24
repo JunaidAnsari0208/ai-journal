@@ -1,8 +1,3 @@
-You are absolutely right. My apologies\! The previous version was too elaborate. A good README should be impressive but also concise and reflect the actual scope of the project.
-
-Here is a shorter, cleaner, and more direct version. It's in a raw markdown format, so you can copy and paste it directly into your `README.md` file.
-
------
 
 ### Instructions
 
