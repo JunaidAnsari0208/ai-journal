@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import api from "@/lib/api";
+import axios from "axios";
 import { BookOpen, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -37,10 +38,14 @@ export default function LoginPage() {
 
       toast.success("Login successful!");
       window.location.href = "/dashboard";
-    } catch (error: any) {
-      toast.error(
-        "Login failed: " + (error.response?.data?.message || error.message)
-      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Login failed");
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +137,7 @@ export default function LoginPage() {
         </Card>
 
         <p className="text-center text-sm text-gray-400 mt-6">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
             className="text-emerald-400 hover:text-emerald-300 font-medium"

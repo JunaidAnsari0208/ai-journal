@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import api from "@/lib/api";
+import axios from "axios";
 import { PenTool } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -29,12 +30,44 @@ export default function DashboardPage() {
     try {
       const res = await api.get("/api/journals/my-journals");
       setJournals(res.data);
-    } catch (err) {
-      setError("Failed to fetch journals.");
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setError("Failed to fetch journals: " + error.response.data?.message);
+      } else if (error instanceof Error) {
+        setError("Failed to fetch journals: " + error.message);
+      } else {
+        setError("Failed to fetch journals: An unknown error occurred");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  // OLD ONE
+  // const handleSaveEntry = async () => {
+  //   if (!newEntry.trim()) return;
+  //   try {
+  //     await api.post("/api/journals", { content: newEntry });
+  //     setNewEntry("");
+  //     setIsWriting(false);
+  //     await fetchJournals();
+  //   } catch (_err: any) {
+  //     setError("Failed to save entry." + _err.message);
+  //   }
+  // };
+
+  // OLD ONE
+  // const handleGenerateReport = async () => {
+  //   try {
+  //     const res = await api.post("/api/journals/user/generate-report");
+  //     setReportMessage(res.data);
+  //   } catch (err: any) {
+  //     setReportMessage(
+  //       "Failed to generate report: " +
+  //         (err.response?.data?.message || err.message)
+  //     );
+  //   }
+  // };
 
   const handleSaveEntry = async () => {
     if (!newEntry.trim()) return;
@@ -42,24 +75,42 @@ export default function DashboardPage() {
       await api.post("/api/journals", { content: newEntry });
       setNewEntry("");
       setIsWriting(false);
+      toast.success("Entry saved successfully!");
       await fetchJournals();
     } catch (err) {
-      setError("Failed to save entry.");
+      // <-- FIX: Removed ': any' and added safe error handling
+      let errorMessage = "Failed to save entry.";
+      if (axios.isAxiosError(err) && err.response) {
+        errorMessage += ` ${err.response.data?.message || err.message}`;
+      } else if (err instanceof Error) {
+        errorMessage += ` ${err.message}`;
+      }
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
   const handleGenerateReport = async () => {
+    toast.info("Generating your report...");
     try {
       const res = await api.post("/api/journals/user/generate-report");
       setReportMessage(res.data);
-    } catch (err: any) {
-      setReportMessage(
-        "Failed to generate report: " +
-          (err.response?.data?.message || err.message)
-      );
+    } catch (err) {
+      // <-- FIX: Removed ': any' and added safe error handling
+      if (axios.isAxiosError(err) && err.response) {
+        setReportMessage(
+          "Failed to generate report: " +
+            (err.response.data?.message || err.message)
+        );
+      } else if (err instanceof Error) {
+        setReportMessage("Failed to generate report: " + err.message);
+      } else {
+        setReportMessage(
+          "An unknown error occurred while generating the report."
+        );
+      }
     }
   };
-
   useEffect(() => {
     const hasSeenRateLimitNotice = localStorage.getItem("rateLimitNoticeShown");
 

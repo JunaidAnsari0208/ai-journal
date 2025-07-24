@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import api from "@/lib/api";
+import axios from "axios";
 import { BookOpen, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -43,11 +44,17 @@ export default function RegisterPage() {
       });
       toast.success("Registration successful! You can now log in.");
       console.log(response.data);
-    } catch (error: any) {
-      toast.error(
-        "Registration failed: " +
-          (error.response?.data?.message || error.message)
-      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message ||
+          "Registration failed. Please try again.";
+        toast.error(errorMessage);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
