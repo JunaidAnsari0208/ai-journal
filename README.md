@@ -1,9 +1,4 @@
 
-### Instructions
-
-Click the "Copy" button in the corner of the code block below and paste the entire content into your `README.md` file on GitHub.
-
-````markdown
 # 🧠 AI Journal
 
 **A full-stack journaling app that uses Google Gemini to analyze your mood and provide weekly insights.**
