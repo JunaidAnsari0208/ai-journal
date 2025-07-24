@@ -37,8 +37,8 @@ export default function HomePage() {
             Your weekly summary, delivered
           </h2>
           <p className="text-gray-400 mb-6">
-            Every week, you'll receive a short email summarizing your mood and
-            progress.
+            Every week, you&apos;ll receive a short email summarizing your mood
+            and progress.
           </p>
           <Button
             className="bg-purple-600 hover:bg-purple-700 text-white"

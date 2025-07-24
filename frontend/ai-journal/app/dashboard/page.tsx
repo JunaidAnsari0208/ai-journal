@@ -43,32 +43,6 @@ export default function DashboardPage() {
     }
   };
 
-  // OLD ONE
-  // const handleSaveEntry = async () => {
-  //   if (!newEntry.trim()) return;
-  //   try {
-  //     await api.post("/api/journals", { content: newEntry });
-  //     setNewEntry("");
-  //     setIsWriting(false);
-  //     await fetchJournals();
-  //   } catch (_err: any) {
-  //     setError("Failed to save entry." + _err.message);
-  //   }
-  // };
-
-  // OLD ONE
-  // const handleGenerateReport = async () => {
-  //   try {
-  //     const res = await api.post("/api/journals/user/generate-report");
-  //     setReportMessage(res.data);
-  //   } catch (err: any) {
-  //     setReportMessage(
-  //       "Failed to generate report: " +
-  //         (err.response?.data?.message || err.message)
-  //     );
-  //   }
-  // };
-
   const handleSaveEntry = async () => {
     if (!newEntry.trim()) return;
     try {
