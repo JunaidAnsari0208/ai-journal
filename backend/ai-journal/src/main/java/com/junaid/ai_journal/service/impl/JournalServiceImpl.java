@@ -8,7 +8,10 @@ import com.junaid.ai_journal.repository.JournalEntryRepository;
 import com.junaid.ai_journal.service.AnalysisService;
 import com.junaid.ai_journal.service.EmailService;
 import com.junaid.ai_journal.service.JournalService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -71,7 +74,8 @@ public class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public void generateReport(Long userId) {
+    @RateLimiter(name = "reportLimiter", fallbackMethod = "reportLimiterFallback")
+    public ResponseEntity<String> generateReport(Long userId) {
         UserDTO userDTO = userServiceClient.getUserById(userId);
 
         String recipientEmail = userDTO.getEmail();
@@ -88,7 +92,11 @@ public class JournalServiceImpl implements JournalService {
         String combinedJournalText = combinedText.toString();
 
         String report = analysisService.getAnalysis(combinedJournalText);
-        emailService.sendEmail(recipientEmail, subject, report);
+        return emailService.sendEmail(recipientEmail, subject, report);
     }
 
+    public ResponseEntity<String> reportLimiterFallback(Long userId, Throwable throwable){
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body("Too many requests! Please try later...");
+    }
 }

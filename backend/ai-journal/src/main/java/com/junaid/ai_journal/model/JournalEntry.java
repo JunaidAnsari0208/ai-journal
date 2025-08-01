@@ -17,7 +17,7 @@ public class JournalEntry {
     private Long userId;
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(nullable = false, updatable = false)

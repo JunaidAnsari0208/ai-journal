@@ -5,6 +5,7 @@ import com.junaid.user_service.model.User;
 import com.junaid.user_service.payload.dto.UserDTO;
 import com.junaid.user_service.repository.UserRepository;
 import com.junaid.user_service.service.UserService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,7 @@ public class UserServiceImpl implements UserService {
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
+
 
     @Override
     public void deleteUser(Long userId) throws Exception {

@@ -65,17 +65,25 @@ export default function DashboardPage() {
   };
 
   const handleGenerateReport = async () => {
-    toast.info("Generating your report...");
+    const toastId = toast.loading("Generating your report...");
     try {
       const res = await api.post("/api/journals/user/generate-report");
+      toast.success("Report generated successfully!", {
+        id: toastId,
+      });
       setReportMessage(res.data);
     } catch (err) {
-      // <-- FIX: Removed ': any' and added safe error handling
       if (axios.isAxiosError(err) && err.response) {
-        setReportMessage(
-          "Failed to generate report: " +
-            (err.response.data?.message || err.message)
-        );
+        if (err.response.status === 429) {
+          toast.error(
+            err.response.data || "Too many requests. Please try again later!"
+          );
+        } else {
+          setReportMessage(
+            "Failed to generate report: " +
+              (err.response.data?.message || err.message)
+          );
+        }
       } else if (err instanceof Error) {
         setReportMessage("Failed to generate report: " + err.message);
       } else {
@@ -83,8 +91,46 @@ export default function DashboardPage() {
           "An unknown error occurred while generating the report."
         );
       }
+      toast.error("Failed to generate report!", {
+        id: toastId,
+      });
     }
   };
+
+  // -----------------------------------------------------
+
+  // const handleGenerateReport1 = async () => {
+  //   const toastId = toast.loading("Generating your report...");
+  //   try {
+  //     const res = await api.post("/api/journals/user/generate-report");
+  //     toast.success("Report generated successfully!", {
+  //       id: toastId,
+  //     });
+  //     setReportMessage(res.data);
+  //   } catch (err) {
+  //     let errorMessage =
+  //       "An unknown error occurred while generating the report.";
+  //     if (axios.isAxiosError(err) && err.response) {
+  //       if (err.response.status === 429) {
+  //         errorMessage =
+  //           err.response.data || "Too many requests. Please try again later.";
+  //       } else {
+  //         errorMessage =
+  //           "Failed to generate report: " + err.response.data?.message ||
+  //           err.message;
+  //       }
+  //     } else if (err instanceof Error) {
+  //       errorMessage = "Failed to generate report: " + err.message;
+  //     }
+  //     toast.error(errorMessage, {
+  //       id: toastId,
+  //     });
+  //     setReportMessage(errorMessage);
+  //   }
+  // };
+
+  // --------------------------------------------------------
+
   useEffect(() => {
     const hasSeenRateLimitNotice = localStorage.getItem("rateLimitNoticeShown");
 

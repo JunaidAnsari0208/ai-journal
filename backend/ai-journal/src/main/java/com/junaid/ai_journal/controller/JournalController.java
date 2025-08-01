@@ -90,10 +90,6 @@ public class JournalController {
         String token = auth.replace("Bearer ", "");
         Long userId = jwtService.extractUserId(token);
         // Call the existing service method that contains all the logic.
-        journalService.generateReport(userId);
-
-        // Return a simple confirmation. Check your application console logs to see the AI response.
-        return ResponseEntity.ok("Report generated for the user! Kindly check your E-Mail...");
+        return journalService.generateReport(userId);
     }
-
 }

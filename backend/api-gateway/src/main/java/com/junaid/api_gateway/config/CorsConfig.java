@@ -15,7 +15,7 @@ public class CorsConfig {
 
     /**
      * This bean provides a central place to configure CORS policies,
-     * which is more robust than using application.yml properties.
+     * which is more robust than using application-prod.yml properties.
      */
     @Bean
     public CorsWebFilter corsWebFilter() {

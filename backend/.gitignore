@@ -78,3 +78,5 @@ yarn-error.log
 .env.test.local
 .env.production.local
 
+# Local dev files
+application-dev.*

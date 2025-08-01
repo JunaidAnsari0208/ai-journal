@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // Ensures t
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 1. Check for the JWT in the "Authorization" header.
+        // Step 1. Check for the JWT in the "Authorization" header.
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String username;
@@ -41,18 +41,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // Ensures t
             return;
         }
 
-        // 2. Extract the token from the header string.
+        // Step 2. Extract the token from the header string.
         jwt = authHeader.substring(7); // "Bearer ".length() is 7
 
-        // 3. Extract the username from the token using our JwtService.
+        // Step 3. Extract the username from the token using our JwtService.
         username = jwtService.extractUsername(jwt);
 
-        // 4. If we have a username AND the user is not already authenticated...
+        // Step 4. If we have a username AND the user is not already authenticated...
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // Load the user details from the database using our UserDetailsService.
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            // 5. Check if the token is valid for this user.
+            // Step 5. Check if the token is valid for this user.
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 // If valid, create an authentication token...
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // Ensures t
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
-                // 6. Update the SecurityContextHolder. This is how we tell Spring Security the user is authenticated.
+                // Step 6. Update the SecurityContextHolder. This is how we tell Spring Security the user is authenticated.
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }

@@ -11,14 +11,13 @@ package com.junaid.user_service.security; // Use your actual package name
 import com.junaid.user_service.model.User; // Make sure this import is correct
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,11 +46,11 @@ public class JwtService {
 
     public Claims extractAllClaims(String token) {
         return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
+                .parser()
+                .verifyWith(getSignInKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -67,20 +66,18 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Key getSignInKey() {
+    private SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // --- METHODS FOR CREATING TOKENS (WITH THE FIX) ---
-
     public String generateToken(UserDetails userDetails) {
-        // We cast the UserDetails back to our custom User object to access the ID
+        //Cast the UserDetails back to our custom User object to access the ID
         User user = (User) userDetails;
 
         // Create a map of extra claims to add to the token
         Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("userId", user.getId()); // <-- THE FIX: Add the user's ID to the token
+        extraClaims.put("userId", user.getId());
 
         return generateToken(extraClaims, userDetails);
     }
@@ -89,7 +86,7 @@ public class JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ) {
-        // Also add the ID here for consistency, in case this method is called directly
+        // Adding the ID here for consistency, in case this method is called directly
         if (!extraClaims.containsKey("userId")) {
             User user = (User) userDetails;
             extraClaims.put("userId", user.getId());
@@ -108,11 +105,13 @@ public class JwtService {
     ) {
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .claims()
+                .add(extraClaims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .and()
+                .signWith(getSignInKey())
                 .compact();
     }
 }
