@@ -1,5 +1,6 @@
 package com.junaid.ai_journal.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.junaid.ai_journal.model.JournalEntry;
 import com.junaid.ai_journal.payload.dto.JournalEntryDTO;
 import org.springframework.http.ResponseEntity;
@@ -13,5 +14,5 @@ public interface JournalService {
     List<JournalEntry> getAllJournalEntries(Long userId);
     void deleteJournalEntry(Long journalId) throws Exception;
     List<JournalEntry> getWeeklyEntries(Long userId);
-    ResponseEntity<String> generateReport(Long userId);
+    void generateReport(Long userId) throws JsonProcessingException;
 }
