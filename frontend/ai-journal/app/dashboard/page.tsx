@@ -76,7 +76,7 @@ export default function DashboardPage() {
       if (axios.isAxiosError(err) && err.response) {
         if (err.response.status === 429) {
           toast.error(
-            err.response.data || "Too many requests. Please try again later!"
+            err.response.data || "Too many requests. Please try again later..."
           );
         } else {
           setReportMessage(
