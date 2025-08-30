@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "USER-SERVICE", url = "${user.service.url}")
+@FeignClient(name = "USER-SERVICE")
 
 // Add this url below alongside name if u get FeignClient error when pushing to prod
 // url = "${user.service.url}"
