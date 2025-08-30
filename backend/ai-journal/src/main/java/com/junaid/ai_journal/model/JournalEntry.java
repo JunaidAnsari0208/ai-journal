@@ -1,5 +1,6 @@
 package com.junaid.ai_journal.model;
 
+import com.junaid.ai_journal.config.CryptoConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ public class JournalEntry {
 
     @Lob
     @Column(nullable = false, columnDefinition = "LONGTEXT")
+    @Convert(converter = CryptoConverter.class)
     private String content;
 
     @Column(nullable = false, updatable = false)
