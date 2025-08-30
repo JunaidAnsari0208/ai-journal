@@ -3,6 +3,7 @@ package com.junaid.ai_journal.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.junaid.ai_journal.client.UserServiceClient;
+import com.junaid.ai_journal.config.AesEncryptor;
 import com.junaid.ai_journal.model.JournalEntry;
 import com.junaid.ai_journal.payload.dto.JournalEntryDTO;
 import com.junaid.ai_journal.payload.dto.JournalReport;
@@ -35,6 +36,7 @@ public class JournalServiceImpl implements JournalService {
     private final UserServiceClient userServiceClient;
     private final ObjectMapper objectMapper;
     private static final Logger logger = LoggerFactory.getLogger(JournalServiceImpl.class);
+    private final AesEncryptor encryptor;
 
 
     @Override
