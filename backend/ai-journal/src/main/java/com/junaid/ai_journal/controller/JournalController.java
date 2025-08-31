@@ -6,6 +6,7 @@ import com.junaid.ai_journal.payload.dto.JournalEntryDTO;
 import com.junaid.ai_journal.security.JwtService;
 import com.junaid.ai_journal.security.UserPrincipal;
 import com.junaid.ai_journal.service.JournalService;
+import com.junaid.ai_journal.service.RateLimitingService;
 import com.junaid.ai_journal.service.impl.JournalServiceImpl;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.Valid;
@@ -29,6 +30,7 @@ public class JournalController {
     private final JournalService journalService;
     private final JwtService jwtService;
     private static final Logger logger = LoggerFactory.getLogger(JournalServiceImpl.class);
+    private final RateLimitingService rateLimiter;
 
     @PostMapping
     public ResponseEntity<JournalEntry> createJournalEntry(@RequestBody CreateJournalRequest createJournalRequest,
@@ -90,25 +92,29 @@ public class JournalController {
      * @return A confirmation message.
      */
     @PostMapping("/user/generate-report")
-    @RateLimiter(name = "reportLimiter", fallbackMethod = "reportLimiter")
     public ResponseEntity<String> triggerWeeklyReport(@RequestHeader("Authorization") String auth) {
 
         try {
             String token = auth.replace("Bearer ", "");
             Long userId = jwtService.extractUserId(token);
+
+            // Setting up key for rate limiter and checking it if its allowed
+            String key = "rate-limit:"+userId;
+            boolean allowed = rateLimiter.isAllowed(key, 1, 300);
+
+            if(!allowed)
+                return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                        .body("Too many requests! Please try again later");
+
             // Call the existing service method that contains all the logic.
             journalService.generateReport(userId);
 
             return ResponseEntity.ok("Report generated successfully!");
 
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong!");
         }
     }
 
-    public ResponseEntity<String> reportLimiter(String auth, Throwable throwable){
-        logger.warn("Rate limit hit for auth token [{}]. Reason: {}", auth, throwable.getMessage());
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .body("Too many requests. Please try again later.");
-    }
 }
