@@ -1,5 +1,8 @@
-//
 "use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,28 +22,61 @@ import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
+const registerSchema = z.object({
+  userName: z
+    .string()
+    .min(3, { message: "Username must be at least 3 characters long." })
+    .max(20, { message: "Username cannot be longer than 20 characters." })
+    .regex(/^[a-zA-Z0-9_.]+$/, {
+      message:
+        "Username can only contain letters, numbers, underscores, and dots.",
+    }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long." })
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      {
+        message:
+          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      }
+    ),
+  agreedToTerms: z.boolean().refine((val) => val, {
+    message: "You must agree to the terms and conditions.",
+  }),
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
+
 export default function RegisterPage() {
-  const [userName, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control,
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    // Setting default values so the form is controlled
+    defaultValues: {
+      userName: "",
+      email: "",
+      password: "",
+      agreedToTerms: false,
+    },
+  });
 
-    if (!agreedToTerms) {
-      toast.error("Please agree to the terms and conditions.");
-      return;
-    }
-
+  // Refactor the submission handler to accept validated data
+  const handleRegister = async (data: RegisterFormValues) => {
     setIsLoading(true);
     try {
       const response = await api.post("/api/auth/register", {
-        userName,
-        email,
-        password,
+        userName: data.userName,
+        email: data.email,
+        password: data.password,
       });
       toast.success("Registration successful! You can now log in.");
       console.log(response.data);
@@ -75,16 +111,14 @@ export default function RegisterPage() {
         </div>
 
         <Card className="bg-gray-900 border-gray-800">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-xl text-white">
-              Sign up for JournalFlow
-            </CardTitle>
+          <CardHeader>
+            <CardTitle className="text-xl text-white">Sign up</CardTitle>
             <CardDescription className="text-gray-400">
               Create your free account to begin journaling
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <form onSubmit={handleRegister} className="space-y-4">
+          <CardContent>
+            <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="username" className="text-gray-200">
                   Username
@@ -96,11 +130,14 @@ export default function RegisterPage() {
                     type="text"
                     placeholder="e.g. junaid_0208"
                     className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-emerald-500"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    required
+                    {...register("userName")}
                   />
                 </div>
+                {errors.userName && (
+                  <p className="text-sm text-red-500">
+                    {errors.userName.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -114,11 +151,12 @@ export default function RegisterPage() {
                     type="email"
                     placeholder="john@example.com"
                     className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-emerald-500"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+                    {...register("email")}
                   />
                 </div>
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -132,9 +170,7 @@ export default function RegisterPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a strong password"
                     className="pl-10 pr-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-emerald-500"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
+                    {...register("password")}
                   />
                   <button
                     type="button"
@@ -148,16 +184,25 @@ export default function RegisterPage() {
                     )}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-red-500">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="terms"
-                  checked={agreedToTerms}
-                  onCheckedChange={(checked) =>
-                    setAgreedToTerms(checked as boolean)
-                  }
-                  className="border-gray-700 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+                <Controller
+                  name="agreedToTerms"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox
+                      id="terms"
+                      className="border-gray-700 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
                 />
                 <Label htmlFor="terms" className="text-sm text-gray-300">
                   I agree to the{" "}
@@ -176,11 +221,16 @@ export default function RegisterPage() {
                   </Link>
                 </Label>
               </div>
+              {errors.agreedToTerms && (
+                <p className="text-sm text-red-500">
+                  {errors.agreedToTerms.message}
+                </p>
+              )}
 
               <Button
                 type="submit"
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                disabled={isLoading || !agreedToTerms}
+                disabled={isLoading}
               >
                 {isLoading ? "Creating account..." : "Create account"}
               </Button>
