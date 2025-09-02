@@ -21,7 +21,7 @@
 ## ✨ Features
 
 -   **✍️ Simple Journaling**: A clean, distraction-free editor for your daily entries.
--   **🤖 AI-Powered Analysis**: Uses **Google Gemini 1.5 Flash** for sentiment analysis on each entry.
+-   **🤖 AI-Powered Analysis**: Uses **Google Gemini 2.5 Flash** for sentiment analysis on each entry.
 -   **📊 Mood History**: Visualizes your mood trends over time on a personal dashboard.
 -   **📬 Weekly Email Summaries**: Get AI-generated weekly mood reports sent to your inbox.
 -   **🔐 Secure Authentication**: JWT-based user login to keep your journal private.
