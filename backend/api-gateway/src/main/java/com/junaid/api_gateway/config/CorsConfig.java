@@ -1,14 +1,13 @@
 package com.junaid.api_gateway.config;
 
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 public class CorsConfig {
@@ -23,7 +22,7 @@ public class CorsConfig {
         final CorsConfiguration corsConfig = new CorsConfiguration();
 
         // Allow requests from your Next.js development server
-        corsConfig.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "https://*.vercel.app", "https://ai-journal-liard.vercel.app"));
+        corsConfig.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "https://ai-journal-liard.vercel.app"));
 
         // Allow all standard HTTP methods
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
